@@ -1,0 +1,6 @@
+The following files are missing:
+	./bcd
+	./boot.sdi
+These files are property of Microsoft and cannot be uploaded.
+You may find a copy of the fils in the /boot directory on the
+Windows installation media/image
