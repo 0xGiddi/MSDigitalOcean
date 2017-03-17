@@ -5,7 +5,7 @@
 # Might want to add in future multiple arch support
 
 kernel wimboot
-initrd stage1/boot/bcd          BCD
-initrd stage1/boot/boot.sdi     boot.sdi
-initrd -n stage1/boot/boot.wim boot.wim
+initrd boot/bcd          BCD
+initrd boot/boot.sdi     boot.sdi
+initrd -n boot.wim boot/boot.wim boot.wim
 boot
