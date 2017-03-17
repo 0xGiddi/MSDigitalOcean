@@ -7,5 +7,5 @@
 kernel wimboot
 initrd stage1/boot/bcd          BCD
 initrd stage1/boot/boot.sdi     boot.sdi
-initrd -n boot.wim boot.wim boot.wim
+initrd -n stage1/boot/boot.wim boot.wim
 boot
