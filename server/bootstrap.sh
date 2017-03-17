@@ -1,0 +1,1 @@
+stage0/install_ipxe.sh
