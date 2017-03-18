@@ -27,9 +27,18 @@ winArch="$(wimlib-imagex info "$dstDir"/boot.wim | grep "Architecture" | awk '{p
 cat > "$cmdFile" <<EOF
 rename /setup.exe /setup.exe.org
 rename /sources/setup.exe /sources/setup.exe.org
-add "$orgDir"/winpe_utils/wget.exe /Windows/System32/wget.exe
-add "$orgDir"/winpe_utils/imagex.exe /WIndows/System32/imagex.exe
-add "$orgDir"/winpe_utils/drivers/$winVersion/$winArch/ /Drivers/$winVersion/$winArch/
+add "$orgDir"/winpe_utils/wget.exe /windows/system32/wget.exe
+add "$orgDir"/winpe_utils/imagex.exe /windows/system32/imagex.exe
+add "$orgDir"/winpe_utils/drivers/$winVersion/$winArch/ /Drivers/
+add "$orgDir"/winpe_utils/startnet.cmd /windows/system32/starnet.cmd
+add "$orgDir"/winpe_utils/loader.cmd /windows/system32/loader.cmd
 EOF
+
+# update the wim, but make sure that internal script files are all DOS formatted
+unix2dos "$orgDir"/winpe_utils/startnet.cmd
+unix2dos "$orgDir"/winpe_utils/loader.cmd
+wimlib-imagex update "$dstDir"/boot.wim --check < "$cmdFile"
+
+cp "$dstDir"/boot.wim "$orgDir"/../server/stage1/boot/boot.wim
 
 
