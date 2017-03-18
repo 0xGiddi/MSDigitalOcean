@@ -1,0 +1,5 @@
+rename /setup.exe /setup.exe.org
+rename /sources/setup.exe /sources/setup.exe.org
+add drivers/ /drivers
+
+
