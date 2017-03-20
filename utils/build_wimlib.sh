@@ -6,8 +6,8 @@
 tmpDir="$(mktemp -d)"
 orgDir=$(pwd)
 
-
-sudo apt-get install -y libxml2 gettext libfuse-dev libattr1-dev git build-essential libssl-dev p7zip-full fuseiso ipmitool libbz2-dev ntfs-3g-dev
+sudo apt-get update
+sudo apt-get install -y autoconf libxml2-dev libtool gettext pkg-config libfuse-dev libattr1-dev git build-essential libssl-dev p7zip-full fuseiso ipmitool libbz2-dev ntfs-3g-dev
 
 git clone git://wimlib.net/wimlib "$tmpDir"
 cd "$tmpDir"

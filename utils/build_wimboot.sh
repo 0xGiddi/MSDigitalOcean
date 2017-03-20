@@ -6,6 +6,7 @@
 tmpDir="$(mktemp -d)"
 orgDir=$(pwd)
 
+sudo apt-get update
 sudo apt-get install -y pesign libiberty-dev binutils-dev
 git clone https://git.ipxe.org/wimboot.git "$tmpDir"
 
