@@ -33,7 +33,6 @@ rename /setup.exe /setup.exe.org
 rename /sources/setup.exe /sources/setup.exe.org
 add $orgDir/winpe_utils/drivers/$winVersion/$winArch/ /drivers/
 add $orgDir/winpe_utils/winpeshl.ini $sys32/winpeshl.ini
-add $orgDir/winpe_utils/loadDrivers.cmd $sys32/loadDrivers.cmd
 add $orgDir/winpe_utils/script.vbs $sys32/autoinstaller.vbs
 EOF
 
