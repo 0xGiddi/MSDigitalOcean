@@ -190,8 +190,57 @@ Class clsJSON
 End Class
 
 
+Class clsDiskpartWrapper 
+    Private objDPHandle, objShell
+
+    Private Sub Class_Initialize
+        Set objShell = WScript.CreateObject("WScript.Shell")
+        Set objDPHandle = objShell.Exec("diskpart.exe")
+    End Sub
+
+    Public Function RunAndExpect(strCmd, strResultSubs)
+        Dim strTemp
+
+        WScript.Echo "Sending command to diskpar: " & strCmd
+        objDPHandle.StdIn.Write strCmd  & VbCrLf
+
+        WScript.Echo "First loop output: "
+        Do While True
+            strTemp = objDPHandle.StdOut.ReadLine & VbCrLf
+            WScript.Echo strTemp
+            If InStr(strTemp, "DISKPART>") <> 0 Then 
+                Exit Do
+            End If
+        Loop      
+
+        WScript.Echo "Sending empty command"
+        objDPHandle.StdIn.Write VbCrLf
+
+        WScript.Echo "Second loop output: "
+        Do While True
+            strTemp = objDPHandle.StdOut.ReadLine
+            WScript.Echo strTemp
+
+            If InStr(strTemp, "DISKPART>") <> 0 Then 
+                Exit Do
+            End If 
+
+            RunAndExpect = False
+            WScript.Echo "Expected '" & strResultSubs  & "' to be in output"
+            If InStr(strResultSubs, strTemp) Then
+                WScript.Echo "Expected result was found"
+                RunAndExpect = True
+            Else
+                WScript.Echo "Expected result was NOT found"
+            End If
+        Loop
+    End Function
+
+End Class
+
+' Set the network interface wih the given MAC to he given parameters
 Function SetDropletRealNetConfig(strIPAddr, strNetmask, strGateway, strAdapterMAC)
-    'On Error Resume Next
+    On Error Resume Next
     Dim objWMIService, objWMIResult, errEnableAddr, intTestAdapter, blnAdapterFound
 
     Set objWMIService = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\cimv2") 
@@ -285,6 +334,32 @@ Sub BlockUntilNetworkReady
     WScript.Echo "BlockUntilNetworkReady done"
 End Sub
 
+Sub RebuildStorageForWindows
+    Dim objDiskpart, blnErrorCheck
+
+    Set objDiskpart = New clsDiskpartWrapper
+    
+    blnErrorCheck = objDiskpart.RunAndExpect("select disk 0", "Disk 0 is now the selected disk")
+    If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
+    blnErrorCheck = objDiskpart.RunAndExpect("clean", "DiskPart succeeded in cleaning the disk")
+    If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
+    blnErrorCheck = objDiskpart.RunAndExpect("create partition primary size=300", "DiskPart succeeded in creating the specified partition")
+    If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
+    blnErrorCheck = objDiskpart.RunAndExpect("format quick fs=ntfs label=""System""", "DiskPart successfully formatted the volume")
+    If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
+    blnErrorCheck = objDiskpart.RunAndExpect("assign letter=""S""", "DiskPart successfully assigned the drive letter or mount point")
+    If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
+
+    blnErrorCheck = objDiskpart.RunAndExpect("active", "DiskPart marked the current partition as active")
+    If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
+    blnErrorCheck = objDiskpart.RunAndExpect("create partition primary", "DiskPart succeeded in creating the specified partition")
+    If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
+    blnErrorCheck = objDiskpart.RunAndExpect("format quick fs=ntfs label=""Windows""", "DiskPart successfully formatted the volume")
+    If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
+    blnErrorCheck = objDiskpart.RunAndExpect("assign letter=""W""", "DiskPart successfully assigned the drive letter or mount point")
+    If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
+End Sub
+
 ' Main script subroutine. 
 Sub Main 
     Dim objDropletConfig, blnErrorCheck
@@ -296,15 +371,16 @@ Sub Main
         Exit Sub
     End If
 
-    blnErrorCheck = SetDropletRealNetConfig( _
-        objDropletConfig("interfaces")("public")("0")("ipv4")("ip_address"), _
+    blnErrorCheck = SetDropletRealNetConfig( objDropletConfig("interfaces")("public")("0")("ipv4")("ip_address"), _
         objDropletConfig("interfaces")("public")("0")("ipv4")("netmask"), _
         objDropletConfig("interfaces")("public")("0")("ipv4")("gateway"), _
-        objDropletConfig("interfaces")("public")("0")("mac") )
+        objDropletConfig("interfaces")("public")("0")("mac"))
     
     If Not blnErrorCheck Then
         WScript.Echo "Failed to set adapter real address"
     End If
+
+    Call RebuildStorageForWindows
 
 End Sub
 
