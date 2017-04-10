@@ -360,6 +360,11 @@ Sub RebuildStorageForWindows
     If Not blnErrorCheck Then WScript.Echo "ERROR!!! Diskpar command failed"
 End Sub
 
+
+Sub FetchDownloaderExec
+	
+End Sub
+
 ' Main script subroutine. 
 Sub Main 
     Dim objDropletConfig, blnErrorCheck
