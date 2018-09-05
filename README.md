@@ -1,3 +1,6 @@
+**This project is waaaay out of date and uses old and inefficient methods of installing Windows of DO
+A new stable and less time consuming method will be release as soon as it's stabel**
+
 # MSDigitalOcean
 
 The aim of this project is to find a convenient way of running MS Windows on a DigitalOcean droplet.
