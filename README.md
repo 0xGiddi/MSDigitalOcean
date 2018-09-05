@@ -1,5 +1,5 @@
-**This project is waaaay out of date and uses old and inefficient methods of installing Windows of DO
-A new stable and less time consuming method will be release as soon as it's stabel**
+**This project is waaaay out of date and uses old and inefficient methods of installing Windows on DO
+A new stable and less time consuming method will be release as soon as it's stable**
 
 # MSDigitalOcean
 
